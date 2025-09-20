@@ -15,7 +15,7 @@ typedef enum {false, true} bool;
 
 // prototypes
 // scary!!
-bool _parse_root(char** tokens, int* cursor, uint num_tokens);
+Node* _parse_root(char** tokens, int* cursor, uint num_tokens);
 bool _parse_expression(char** tokens, int* cursor, uint num_tokens, Node* parent_node);
 bool _parse_function(char** tokens, int* cursor, uint num_tokens, Node* parent_node);
 bool _parse_modifier(char** tokens, int* cursor, uint num_tokens, Node* parent_node);

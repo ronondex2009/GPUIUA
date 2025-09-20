@@ -21,8 +21,10 @@ struct Node {
 
 char* tree_structure_to_string(const Node root_node);
 
-void setparent(Node* node, Node* parent);
+void setparent_right(Node* node, Node* parent);
+void setparent_left(Node* node, Node* parent);
+void reverse_children(Node* node);
 
-Node new_node(const symbol_t symbol_type, const char* token_label);
+Node* new_node(const symbol_t symbol_type, const char* token_label);
 
 #endif
