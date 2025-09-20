@@ -26,7 +26,7 @@ char* tree_structure_to_string(const Node root_node) {
     char* str = (char*)malloc(sizeof(char) * 64);
     snprintf(str, 
         64, 
-        "\nNODE:\n    %s\n    Type: %d",
+        "\nNODE:\n %s\n Type: %d\n",
         root_node.token,
         root_node.symbol_type
     );
@@ -36,7 +36,8 @@ char* tree_structure_to_string(const Node root_node) {
         char* temp_buffer = tree_structure_to_string(*root_node.children_nodes[i]);
         temp_buffer = (char*)realloc(temp_buffer, sizeof(char) * strlen(temp_buffer) * 2);
         substring_replace(temp_buffer, "\n", "\n| ");
-        str = (char*)realloc(str, strlen(str) + strlen(temp_buffer) + 1);
+        strcat(temp_buffer, "\n");
+        str = (char*)realloc(str, strlen(str) + strlen(temp_buffer) + 2);
         strcat(str, temp_buffer);
     }
     return str;

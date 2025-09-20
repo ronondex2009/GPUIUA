@@ -12,8 +12,8 @@ typedef struct Node Node;
 struct Node {
     char* token;            // the token
     symbol_t symbol_type;
-    unsigned int is_subscripted;
-    int subscript;
+    // unsigned int is_subscripted;
+    // int subscript;
     unsigned int number_children_nodes;
     Node** children_nodes;
     Node* parent_node;
