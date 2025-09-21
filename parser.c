@@ -23,7 +23,7 @@ bool accept(const char* acceptable_characters, char** tokens, int* cursor, int n
 void expect(const char* acceptable_characters, char** tokens, int* cursor, int num_tokens) {
     bool accepted = accept(acceptable_characters, tokens, cursor, num_tokens);
     if(accepted == false) {
-        printf("Expected any of following: %s\nat character %d; got %s", acceptable_characters, *cursor, tokens[*cursor]);
+        printf("Expected any of following: %s\nat character %d; got %s\n", acceptable_characters, *cursor, tokens[*cursor]);
         longjmp(err, EXPECT_ERR);
     }
 }
@@ -55,9 +55,28 @@ void tokenize(uint num_entries, char* input_string, char** output_tokens, int* n
     }
 }
 
+bool _parse_subscript(char** tokens, int* cursor, int num_tokens, Node* parent_node) {
+    if(accept("_", tokens, cursor, num_tokens)) {
+        parent_node->is_subscripted = true;
+        parent_node->subscript = 0;
+        // subscripts are hardcoded
+        while(accept("₀₁₂₃₄₅₆₇₈₉", tokens, cursor, num_tokens)) {
+            int val = (int)(tokens[*cursor][2] & 0x0F);
+            parent_node->subscript *= 10;
+            parent_node->subscript + val;
+        }
+    }
+    return true;
+}
+
 // modifier := monmodifiers (subscript)?
 bool _parse_modifier(char** tokens, int* cursor, int num_tokens, Node* parent_node) {
-    // TODO: add
+    if(accept(monadic_modifiers, tokens, cursor, num_tokens)) {
+        Node* my_node = new_node(LEAF_MONADIC_MODIFIER, tokens[*cursor]);
+        setparent_left(my_node, parent_node);
+        _parse_subscript(tokens, cursor, num_tokens, my_node);
+        return true;
+    }
     return false;
 }
 
@@ -66,7 +85,7 @@ bool _parse_function(char** tokens, int* cursor, int num_tokens, Node* parent_no
     if(accept("(", tokens, cursor, num_tokens)) 
     { 
         // inline
-        puts("parsing function -> ( root )");
+        dbputs("parsing function -> ( root )");
         Node* my_node = _parse_root(tokens, cursor, num_tokens);
         setparent_left(my_node, parent_node);
         expect(")", tokens, cursor, num_tokens);
@@ -75,15 +94,16 @@ bool _parse_function(char** tokens, int* cursor, int num_tokens, Node* parent_no
     else if (accept(pervasives, tokens, cursor, num_tokens)) 
     { 
         // pervasive
-        puts("parsing function -> pervasive [LEAF]");
+        dbputs("parsing function -> pervasive [LEAF]");
         Node* my_node = new_node(LEAF_PERVASIVE, tokens[*cursor]);
+        _parse_subscript(tokens, cursor, num_tokens, my_node);
         setparent_left(my_node, parent_node);
         return true;
     } 
     else 
     { 
         // literal
-        puts("expression <- function [backtrack]");
+        dbputs("expression <- function [backtrack]");
         return false; // we dont have number literals yet
     }
 }
@@ -91,22 +111,22 @@ bool _parse_function(char** tokens, int* cursor, int num_tokens, Node* parent_no
 // expression := modifier expression | function
 bool _parse_expression(char** tokens, int* cursor, int num_tokens, Node* parent_node) {
     Node* my_node = new_node(EXPRESSION, "<EXPRESSION>"); 
-    setparent_left(my_node, parent_node);
     bool succ;
     if(_parse_modifier(tokens, cursor, num_tokens, my_node)) {
-        puts("parsing expression -> modifier expression");
+        dbputs("parsing expression -> modifier expression");
         succ = _parse_expression(tokens, cursor, num_tokens, my_node); 
         reverse_children(my_node); // modifier has to be first
     } else {
-        puts("parsing expression -> function");
+        dbputs("parsing expression -> function");
         succ = _parse_function(tokens, cursor, num_tokens, my_node);
     }
+    if(succ) {setparent_left(my_node, parent_node);} else {free(my_node);}
     return succ;
 }
 
 // root := expression+
 Node* _parse_root(char** tokens, int* cursor, int num_tokens) {
-    puts("parsing root");
+    dbputs("parsing root");
     Node* parse_tree = new_node(ROOT, "<ROOT>");
     bool cont = true;
     while(cont) {cont = _parse_expression(tokens, cursor, num_tokens, parse_tree);} // expression+
@@ -125,7 +145,7 @@ Node* parse(char* input) {
     error_t type_of_error = setjmp(err);
     if(type_of_error != NO_ERROR) {
         puts("parse(): something crashed");
-        if(type_of_error == EXPECT_ERR) {puts("parser expected a token but didnt get it (did you forget closing paren or do you have a floating modifier?)");}
+        if(type_of_error == EXPECT_ERR) {puts("parser expected a token but didnt get it (did you forget closing paren or do you have a floating modifier? PS: prefix subscripts w/ '_')");}
         if(type_of_error == INVALID_UTF) {puts("tokenizer got invalid UTF-8 text (is the input broken?)");}
         printf("error_t: %d\ncursor position: %d\n", type_of_error, cursor);
         return (Node*)NULL;
@@ -142,7 +162,7 @@ Node* parse(char* input) {
 
 int main(int arg, char* args[]) {
     
-    Node* root = parse("+(-×+-(+-×(÷))(××÷)×=)");
+    Node* root = parse("⍥(⊸+ⁿ_₂)");
     
 
     puts("made it past parsing");

@@ -24,12 +24,7 @@ void substring_replace(char* string, const char* substring, const char* replacem
 char* tree_structure_to_string(const Node root_node) {
     // uhh guhh uhmm uhhh
     char* str = (char*)malloc(sizeof(char) * 64);
-    snprintf(str, 
-        64, 
-        "\nNODE:\n %s\n Type: %d\n",
-        root_node.token,
-        root_node.symbol_type
-    );
+    snprintf(str, 64, "\n%s", root_node.token);
     // add each child onto the branch
     unsigned int num_children = root_node.number_children_nodes;
     for(unsigned int i = 0; i < num_children; i++) {
@@ -63,9 +58,12 @@ void setparent_left(Node* node, Node* parent) {
 // reverses the order of the children of the node; things executed first are now executed last, and vice versa.
 void reverse_children(Node* node) {
     unsigned int num_children = node->number_children_nodes;
-    Node* buf[num_children * sizeof(Node*)];
-    for(unsigned int i = 0; i < num_children; i++) {buf[num_children - i - 1] = node->children_nodes[i];}
-    memcpy(node->children_nodes, buf, num_children);
+    Node* tmp;
+    for(int i = 0; i < num_children/2; i++) {
+        tmp = node->children_nodes[i]; 
+        node->children_nodes[i] = node->children_nodes[num_children - i - 1]; 
+        node->children_nodes[num_children - i - 1] = tmp;
+    }
 }
 
 // initialize a new node with malloced children array; token_label input is memcpy-ed to token attribute.
