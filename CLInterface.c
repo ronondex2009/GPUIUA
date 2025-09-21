@@ -1,5 +1,5 @@
 /*
-    Why is this here again?
+    I need to delete this file
     I think I was using this as a cheat-sheet from some other thing I was doing
     anyways, this is not currently a part of the build
     (this file can be safely deleted)
@@ -140,3 +140,4 @@ int main(int arg, char* args[]) {
     return 1;
 
 }
+
