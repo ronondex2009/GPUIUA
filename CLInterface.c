@@ -1,3 +1,12 @@
+/*
+    Why is this here again?
+    I think I was using this as a cheat-sheet from some other thing I was doing
+    anyways, this is not currently a part of the build
+    (this file can be safely deleted)
+        - Ronan
+*/
+
+
 #define CL_TARGET_OPENCL_VERSION 300
 
 #include <stdio.h>
@@ -129,4 +138,5 @@ int main(int arg, char* args[]) {
 
     printf("END");
     return 1;
+
 }
