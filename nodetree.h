@@ -1,3 +1,9 @@
+/*
+    nodetree.h contains type definitions for nodes, used in the parse tree
+    nodetree.c contains some utility code for initializing nodes on the heap 
+    and constructing a tree.
+*/
+
 #ifndef NODE_TREE_H
 #define NODE_TREE_H
 
@@ -26,5 +32,6 @@ void setparent_left(Node* node, Node* parent);
 void reverse_children(Node* node);
 
 Node* new_node(const symbol_t symbol_type, const char* token_label);
+unsigned int validate_tree(Node* root);
 
 #endif

@@ -76,3 +76,25 @@ Node* new_node(const symbol_t symbol_type, const char* token_label) {
     node->number_children_nodes = 0;
     return node;
 }
+
+// validate a node tree;
+// return true iff:
+//  - every non-leaf has at least one child
+//  - every leaf node has zero children
+unsigned int validate_tree(Node* root) {
+    unsigned int return_code;
+    switch (root->symbol_type) {
+        case ROOT:
+        case EXPRESSION:
+        case FUNCTION:
+            if (root->number_children_nodes <= 0) {return 0;}
+            for (int child = 0; child < root->number_children_nodes; child++) {if (!validate_tree(root->children_nodes[child])) {return 0;}}
+            return 1;
+        case LEAF_MONADIC_MODIFIER:
+        case LEAF_PERVASIVE:
+            return root->number_children_nodes == 0;
+    default:
+        return 0;
+    }
+}
+

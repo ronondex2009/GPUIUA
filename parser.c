@@ -55,6 +55,17 @@ void tokenize(uint num_entries, char* input_string, char** output_tokens, int* n
     }
 }
 
+// prototypes
+// root       := expression+                        <-- PARSE ENTERS HERE
+// expression := modifier <expression> | function
+// function   := '(' expression+ <')'> | Pervasive | literal
+// modifier   := monmodifiers (subscript)?
+Node* _parse_root(char** tokens, int* cursor, int num_tokens);
+bool _parse_expression(char** tokens, int* cursor, int num_tokens, Node* parent_node);
+bool _parse_function(char** tokens, int* cursor, int num_tokens, Node* parent_node);
+bool _parse_modifier(char** tokens, int* cursor, int num_tokens, Node* parent_node);
+bool _parse_subscript(char** tokens, int* cursor, int num_tokens, Node* parent_node);
+
 bool _parse_subscript(char** tokens, int* cursor, int num_tokens, Node* parent_node) {
     if(accept("_", tokens, cursor, num_tokens)) {
         parent_node->is_subscripted = true;

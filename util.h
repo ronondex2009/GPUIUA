@@ -1,3 +1,9 @@
+/*
+    util.h has code for stuff like:
+        - the stack
+    .. and thats it right now
+*/
+
 #ifndef UTIL_H
 #define UTIL_H
 
